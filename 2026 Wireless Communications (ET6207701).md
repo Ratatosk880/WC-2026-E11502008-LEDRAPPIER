@@ -26,7 +26,26 @@ title: Untitled
 > ![wireless2026](https://hackmd.io/_uploads/rJSoEmadzg.jpg)
 
 ## Outline
-[TOC]
+- [Course Evaluation & Peer Review Mechanism](#-course-evaluation--peer-review-mechanism)
+  - [Grading Breakdown](#-grading-breakdown)
+  - [GitHub Lab Submission & Peer Review Policy](#-github-lab-submission--peer-review-top-3-policy)
+- [ToDo list](#todo-list)
+- [1. Q&A](#1-qa)
+- [2. Labs](#2-labs)
+  - [LAB1: Analyzing UE–gNB Connectivity](#lab1--analyzing-uegnb-connectivity-in-an-oai-5g-sa-network)
+  - [LAB2: gNB TDD Traffic Analysis](#lab2-gnb-tdd-traffic-analysis)
+  - [LAB3: O-RAN basic](#lab3-o-ran-basic)
+  - [LAB4: O-RAN Advanced](#lab4-o-ran-advanced)
+  - [LAB5: KPM service model Monitoring xApp](#lab5-kpm-service-model-monitoring-xapp-using-callbacks)
+  - [LAB6: Building a KPM+RC xApp](#lab6-building-a-kpmrc-xapp-for-ran-slicing)
+  - [LAB7: SLA rApp](#lab7-sla-rapp)
+  - [LAB8: Slicing rApp](#lab8-slicing-rapp)
+- [Key knowledge for Lab](#key-knowledge-for-lab)
+- [Schedule](#schedule)
+- [Online Courses](#online-courses)
+- [Student Class Activity Records](#student-class-activity-records)
+- [Reference](#reference)
+- [IEEE WCET Major Areas of Expertise](#ieee-wcet-major-areas-of-expertise)
 
 
 
