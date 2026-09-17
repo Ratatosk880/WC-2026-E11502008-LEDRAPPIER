@@ -1,4 +1,4 @@
-# LAB0 -- Initiation to Wireshark
+<img width="1918" height="800" alt="image" src="https://github.com/user-attachments/assets/433f6f0f-1bed-4e64-90f0-c5aa1ef701d5" /># LAB0 -- Initiation to Wireshark
 
 ## 1) How to Install Wireshark on Ubuntu
 
@@ -72,23 +72,47 @@ You can launch Wireshark using either of the following methods:
 ![SYN-ACK packet screenshot](screenshots/SYN-ACK_packet.png)
 
 - ACK (acknoledge) packet : the client send it back to confirm reception of the syn-ack packet, connection established
-  ![SACK packet screenshot](screenshots/ACK_packet.png)
+![SACK packet screenshot](screenshots/ACK_packet.png)
 
-  ## 3) DNS Packet Analysis
+--- 
 
-  ![DNS packet screenshot](screenshots/dns.png)
+## 3) DNS Packet Analysis
 
-  ### 3.1) What are the IP address and port number of the DNS server?  
-  - Ip address : 140.118.31.99 and destination port : 53
- 
-  ### 3.2) What is the domain name in the DNS query?
-  - www.wikipedia.org
+![DNS packet screenshot](screenshots/dns.png)
 
-  ### 3.3) Which protocols does this DNS packet use? List the protocols from Layer 2 to Layer 5 in the TCP/IP five-layer model:
+### 3.1) What are the IP address and port number of the DNS server?  
+- Ip address : 140.118.31.99 and destination port : 53
 
-  ![layers screenshot](screenshots/layers.png)
+### 3.2) What is the domain name in the DNS query?
+- www.wikipedia.org
 
-  Layer 2 (Link): Ethernet II  
-  Layer 3 (Network): IPv4 (Internet Protocol Version 4)  
-  Layer 4 (Transport): UDP (User Datagram Protocol)  
-  Layer 5 (Application): DNS (Domain Name System)
+### 3.3) Which protocols does this DNS packet use? List the protocols from Layer 2 to Layer 5 in the TCP/IP five-layer model:
+
+![layers screenshot](screenshots/layers.png)
+
+Layer 2 (Link): Ethernet II  
+Layer 3 (Network): IPv4 (Internet Protocol Version 4)  
+Layer 4 (Transport): UDP (User Datagram Protocol)  
+Layer 5 (Application): DNS (Domain Name System)
+
+--- 
+
+## 4) Access an HTTP page
+
+### 4.1 Which HTTP page did you access?
+- http://www.gzxyzn.com/Article/bjrk2/1644.html
+
+### 4.2 What is the IP address and port of the server hosting this page?
+- IP address : 61.183.8.129  and port : 80
+  
+![HTTP packet screenshot](screenshots/http.png)
+
+### 4.3 What is the HTTP request method?
+- It's the GET request method
+
+![GET screenshot](screenshots/get.png)
+
+### 4.4) What is the HTTP response status code, and what does it mean?
+- The Status code is 200 OK, it indicates that the request succeeded and the server successfully returned the requested webpage.
+
+![Status screenshot](screenshots/status.png)
