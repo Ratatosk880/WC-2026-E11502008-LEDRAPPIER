@@ -1,4 +1,6 @@
-# How to Install Wireshark on Ubuntu
+# LAB0 -- Initiation to Wireshark
+
+## 1) How to Install Wireshark on Ubuntu
 
 This tutorial explains how to install and launch the latest stable version of Wireshark on Ubuntu using the official PPA.
 
@@ -31,7 +33,7 @@ sudo apt install wireshark
 
 During the installation process, a configuration screen will appear titled **Configuring wireshark-common**:
 
-![Configuring wireshark-common](Screenshot%20from%202026-09-17%2013-58-32.png)
+![Configuring wireshark-common](screenshots/Configure_wireshark.png)
 
 1. Use the directional arrow keys (<kbd>←</kbd> / <kbd>→</kbd>) to highlight **`<Yes>`**.
 2. Press <kbd>Enter</kbd> to confirm.
