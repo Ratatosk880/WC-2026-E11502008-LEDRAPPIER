@@ -1,4 +1,4 @@
-<img width="1918" height="800" alt="image" src="https://github.com/user-attachments/assets/433f6f0f-1bed-4e64-90f0-c5aa1ef701d5" /># LAB0 -- Initiation to Wireshark
+# LAB0 -- Initiation to Wireshark
 
 ## 1) How to Install Wireshark on Ubuntu
 
@@ -49,6 +49,22 @@ You can launch Wireshark using either of the following methods:
   wireshark
   ```
 - **Via Application Menu:** Open your desktop application menu, search for **Wireshark**, and click the icon to launch.
+
+---
+
+### Additionnal step:
+
+If you don't see your wireless and ethernet port in the capture tab (wl... or eth0), you'll need to: 
+
+- Close Wireshark and run this command in a terminal
+  ```bash
+  sudo usermod -aG wireshark $USER
+  ```
+*Verification*: Run groups $USER and ensure wireshark appears in the list.  
+
+- Then, reboot your PC and after relaunching Wireshark, the ports should appear under the capture tab.
+
+---
 
 ## 2) Website Packet Capture
 
