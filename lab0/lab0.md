@@ -81,13 +81,16 @@ If you don't see your wireless and ethernet port in the capture tab (wl... or et
 
 ### 2.4) What is the process of the TCP three-way handshake?
 
-- SYN (synchronize) packet : Client send a SYN packet to the server to initialize connection
+- SYN (synchronize) packet : Client send a SYN packet to the server to initialize connection  
+  
 ![SYN packet screenshot](screenshots/SYN_packet.png)
 
-- SYN-ACK (synchronize-acknoledgment) packet : the server respond with a SYN-ACK packet to acknowledge the client request
+- SYN-ACK (synchronize-acknoledgment) packet : the server respond with a SYN-ACK packet to acknowledge the client request  
+  
 ![SYN-ACK packet screenshot](screenshots/SYN-ACK_packet.png)
 
-- ACK (acknoledge) packet : the client send it back to confirm reception of the syn-ack packet, connection established
+- ACK (acknoledge) packet : the client send it back to confirm reception of the syn-ack packet, connection established  
+  
 ![SACK packet screenshot](screenshots/ACK_packet.png)
 
 --- 
