@@ -222,7 +222,7 @@ Answer the following questions:
    - It's mo-Signalling
      ![mo-signalling](screenshots/mo_signalling.png)
 2. What SRB does `RRCSetupRequest` use? Why?  
-   - RRCSetupRequest uses SRB0 because no dedicated signaling bearer (SRB1) or UE-specific radio context exists prior to RRC connection establishment.
+   - RRCSetupRequest uses SRB0 on UL-CCCH because no dedicated signaling bearer (SRB1) or UE-specific radio context exists prior to RRC connection establishment.
 3. Which side sends `RRCSetup`?
    - The gNB send it to the UE
 4. Which signaling radio bearer is used after the RRC connection is established?
@@ -324,7 +324,7 @@ Find the PDU Session Establishment Accept and record the UE address:
 
 | Field | Observed value |
 |---|---|
-| UE IPv4 address |  |
+| UE IPv4 address | 10.0.0.2 |
 
 Apply:
 
