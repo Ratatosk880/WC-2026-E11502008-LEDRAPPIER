@@ -188,8 +188,11 @@ nr-rrc
 Find the following messages in order:
 
 1. `RRCSetupRequest`
+  ![RRCSetupRequest](screenshots/rrc_setup_request.png)
 2. `RRCSetup`
+  ![RRCSetup](screenshots/rrc_setup.png)
 3. `RRCSetupComplete`
+  ![RRCSetupRComplete](screenshots/rrc_setup_complete.png)
 
 You may also try these specific filters:
 
@@ -209,18 +212,24 @@ Complete the table:
 
 | Message | Direction | Logical channel / SRB | Main purpose | Packet number |
 |---|---|---|---|---:|
-| RRCSetupRequest |  |  |  |  |
-| RRCSetup |  |  |  |  |
-| RRCSetupComplete |  |  |  |  |
+| RRCSetupRequest | UE -> gNB| ULCCCH / SRB0 | Before connection | 104 |
+| RRCSetup | gNB -> UE | DLCCCH / SRB0 | gNB sets up SRB1 | 105 |
+| RRCSetupComplete | UE -> gNB | ULDCCH / SRB1 | After setup | 108 |
 
 Answer the following questions:
 
-1. What is the establishment cause in `RRCSetupRequest`?
-2. What SRB does `RRCSetupRequest` use? Why?
+1. What is the establishment cause in `RRCSetupRequest`?  
+   - 
+2. What SRB does `RRCSetupRequest` use? Why?  
+   - RRCSetupRequest uses SRB0 because
 3. Which side sends `RRCSetup`?
+   - The gNB send it to the UE
 4. Which signaling radio bearer is used after the RRC connection is established?
+   - It's SRB1
 5. Which NAS message is carried inside `RRCSetupComplete`?
+   - 
 6. At the end of this procedure, is the UE only connected to the gNB, or is it already registered with the 5G Core? Explain.
+   -  
 
 ### Checkpoint 3: RRC Connection Establishment — 35 points
 
