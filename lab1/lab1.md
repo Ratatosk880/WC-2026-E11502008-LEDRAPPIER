@@ -146,19 +146,19 @@ Complete the table:
 
 | Component | IP address | Evidence from the capture |
 |---|---|---|
-| UE PDU address |  |  |
+| UE PDU address | 10.0.0.2 | ![UE PDU IP](screenshots/ue_pdu_ip.png) |
 | gNB | 192.168.70.129 | ![gNB IP](screenshots/gnb_ip.png) |
 | AMF | 192.168.70.132 | ![AMF IP](screenshots/amf_ip.png) |
 | UPF | 192.168.70.134 | ![UPF IP](screenshots/upf_ip.png) |
-| Data Network |  |  |
+| Data Network | 192.168.70.135 | ![Data Network component IP](screenshots/data_network_ip.png) |
 
 Complete the interface table:
 
 | Interface | Connected components | Main protocol | Purpose |
 |---|---|---|---|
-| N1 |  |  |  |
-| N2 |  |  |  |
-| N3 |  |  |  |
+| N1 | UE ↔ AMF (via gNB) | NAS | Registration messages |
+| N2 | gNB ↔ AMF | NGAP | gNB–core messages |
+| N3 | gNB ↔ UPF | GTP-U | Tunnel for UE IP packets |
 
 The logical architecture is:
 
