@@ -147,9 +147,9 @@ Complete the table:
 | Component | IP address | Evidence from the capture |
 |---|---|---|
 | UE PDU address |  |  |
-| gNB |  |  |
-| AMF |  |  |
-| UPF |  |  |
+| gNB | 192.168.70.129 | ![gNB IP](screenshots/gnb_ip.png) |
+| AMF | 192.168.70.132 | ![AMF IP](screenshots/amf_ip.png) |
+| UPF | 192.168.70.134 | ![UPF IP](screenshots/upf_ip.png) |
 | Data Network |  |  |
 
 Complete the interface table:
