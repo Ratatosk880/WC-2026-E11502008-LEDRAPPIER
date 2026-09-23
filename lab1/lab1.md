@@ -261,6 +261,9 @@ RRCSetupComplete
 → Registration Request
 ```
 
+![rrc registration request](screenshots/rrc_registration_request.png)
+
+
 Then apply:
 
 ```wireshark
@@ -274,13 +277,14 @@ InitialUEMessage
 → NAS-PDU
 → Registration Request
 ```
+![ngap registration request](screenshots/ngap_registration_request.png)
 
 Compare the two packets:
 
 | Stage | Protocol message | Sender → receiver | Encapsulated information |
 |---|---|---|---|
-| Radio side | RRCSetupComplete |  |  |
-| Core side | NGAP InitialUEMessage |  |  |
+| Radio side | RRCSetupComplete | UE → gNB | It's a 5GMM registration request (which encapsulate the byte payload 7e004179000d0100f1100000000000000000102e08e060000000000000)  |
+| Core side | NGAP InitialUEMessage | gNB → AMF | It's the same 5GMM Registration request with the same byte payload |
 
 Finally, locate:
 
@@ -290,9 +294,13 @@ Finally, locate:
 Answer:
 
 1. What is the role of the gNB when it transports NAS messages?
+   - The gNB acts as a transparent relay between the UE and the AMF. It extracts the NAS message from the radio RRC frame and repackages it into an NGAP message sent to the core network over the N2 interface, without analyzing or modifying its content.
 2. What is the difference between RRC and NAS signaling?
+   - RRC manages the local radio connection between the UE and the gNB, including radio channels and bearers. NAS is logical signaling between the UE and the 5G Core (AMF/SMF) to handle authentication, security, and user registration.
 3. Is the Registration Request delivered directly from the UE to the AMF? Explain the protocol path.
+   - No, it is not delivered directly because there is no direct physical connection between the UE and the AMF. The UE sends the request to the gNB inside an RRC message (RRCSetupComplete), and the gNB extracts and forwards it to the AMF inside an NGAP message (InitialUEMessage).
 4. Which message confirms that Registration has completed successfully?
+   - The Registration Complete message sent from the UE to the AMF confirms that registration is complete, following the receipt of Registration Accept from the core.
 
 ### Checkpoint 4: RRC-to-NGAP/NAS Mapping — 25 points
 
