@@ -1,4 +1,4 @@
-# Lab 1: Analyzing UE–gNB Connectivity in an OAI 5G SA Network(Student)
+<img width="1920" height="890" alt="image" src="https://github.com/user-attachments/assets/584ff422-ae46-4658-9efb-83cc04020150" /># Lab 1: Analyzing UE–gNB Connectivity in an OAI 5G SA Network(Student)
 
 ## 1. Lab Overview
 
@@ -212,24 +212,26 @@ Complete the table:
 
 | Message | Direction | Logical channel / SRB | Main purpose | Packet number |
 |---|---|---|---|---:|
-| RRCSetupRequest | UE -> gNB| ULCCCH / SRB0 | Before connection | 104 |
-| RRCSetup | gNB -> UE | DLCCCH / SRB0 | gNB sets up SRB1 | 105 |
-| RRCSetupComplete | UE -> gNB | ULDCCH / SRB1 | After setup | 108 |
+| RRCSetupRequest | UE -> gNB| UL-CCCH / SRB0 | Before connection | 104 |
+| RRCSetup | gNB -> UE | DL-CCCH / SRB0 | gNB sets up SRB1 | 105 |
+| RRCSetupComplete | UE -> gNB | UL-DCCH / SRB1 | After setup | 108 |
 
 Answer the following questions:
 
 1. What is the establishment cause in `RRCSetupRequest`?  
-   - 
+   - It's mo-Signalling
+     ![mo-signalling](screenshots/mo_signalling.png)
 2. What SRB does `RRCSetupRequest` use? Why?  
-   - RRCSetupRequest uses SRB0 because
+   - RRCSetupRequest uses SRB0 because no dedicated signaling bearer (SRB1) or UE-specific radio context exists prior to RRC connection establishment.
 3. Which side sends `RRCSetup`?
    - The gNB send it to the UE
 4. Which signaling radio bearer is used after the RRC connection is established?
-   - It's SRB1
+   - It's SRB1 (carried over UL-DCCH / DL-DCCH).
 5. Which NAS message is carried inside `RRCSetupComplete`?
-   - 
+   - A 5GS Registration Request (5GMM Registration Request), located within the dedicatedNAS-Message field.
+     ![nas message](screenshots/nas_message.png)
 6. At the end of this procedure, is the UE only connected to the gNB, or is it already registered with the 5G Core? Explain.
-   -  
+   -  The UE is only connected to the gNB at the radio layer (RRC-connected). It is not yet registered with the 5G Core. The Core registration process has only just begun by delivering the encapsulated Registration Request; mandatory core network procedures such as primary authentication, NAS security setup, slice/subscription authorization, and the exchange of Registration Accept / Registration Complete have not yet occurred.
 
 ### Checkpoint 3: RRC Connection Establishment — 35 points
 
