@@ -334,11 +334,23 @@ gtp || icmp
 
 Find one ICMP Echo Request and its Echo Reply. Confirm that the UE's IP packet is carried inside GTP-U between the gNB and UPF.
 
+![gtp icmp](screenshots/gtp_icmp.png)
+
+| Direction | GTP-U frame | Inner IP | Outer IP |
+|---|---:|---|---|---|
+| Echo Request | 490 | `10.0.0.2` → `192.168.70.135` | `192.168.70.129` → `192.168.70.134` |
+| Echo Reply | 495 | `192.168.70.135` → `10.0.0.2` | `192.168.70.134` → `192.168.70.129` |
+
 Answer:
 
 1. What IPv4 address was assigned to the UE?
+   - The assigned address is 10.0.0.2, found inside the PDU Session Establishment Accept message and visible as the inner source IP in GTP-U frame 490.
 2. How many ICMP Echo Request/Reply pairs are present?
+   - There are 10 ICMP Echo Request/Reply pairs in the capture.
 3. What does the successful Echo Reply prove about the UE connection?
+   - A successful Echo Reply proves that the UE has an active PDU session and that end-to-end user-plane connectivity functions bidirectionally through the N3 GTP-U tunnel, UPF forwarding, and the external Data Network.
+  
+
 
 ### Checkpoint 5: UE IP and User Plane — 15 points
 
