@@ -5,7 +5,6 @@
 - Name: Abel LEDRAPPIER
 - number: E11502008
 - Research Direction: IT in aeronautics
-- Briefly summarize your background and why you want to take this course:
 
 ## :notebook_with_decorative_cover: Assignment
 
