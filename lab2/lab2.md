@@ -449,13 +449,13 @@ Meaning:
 
 Take one screenshot showing the selected packet and these fields.
 - Scenario A
-  ![A Task 6](scenarioAtask6.png)
+  ![A Task 6](screenshots/scenarioAtask6.png)
 
 - Scenario B
-  ![B Task 6](scenarioBtask6.png)
+  ![B Task 6](screenshots/scenarioBtask6.png)
 
 - Scenario C
-  ![C Task 6](scenarioCtask6.png)
+  ![C Task 6](screenshots/scenarioCtask6.png)
 
 > Some GTP packets are echo or control-related packets. Select one that contains an inner IPv4 packet.
 
