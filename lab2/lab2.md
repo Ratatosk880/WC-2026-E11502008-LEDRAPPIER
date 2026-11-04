@@ -59,11 +59,19 @@ Complete the table:
 
 | Scenario | Reverse value | Direction |
 | --- | ---: | --- |
-| A | | |
-| B | | |
-| C | | |
+| A | 1 | Downlink |
+| B | 0 | Uplink |
+| C | 0 | Uplink |
 
 **Question:** Does the traffic direction shown in the JSON match the scenario description? Show the proof.
+- Yes, the traffic direction in the JSON files does match the scenario description for each scenario, we have in fact:
+  - Scenario A => start → test_start → reverse : 1 => Downlink
+    ![Scenario A Task 1](screenshots/scenarioAtask1.png)
+  - Scenario B => start → test_start → reverse : 0 => Uplink
+    ![Scenario B Task 1](screenshots/scenarioBtask1.png)
+  - Scenario C => start → test_start → reverse : 0 => Uplink
+    ![Scenario C Task 1](screenshots/scenarioCtask1.png)
+
 
 ## 4. Task 2 — Compare Throughput
 
