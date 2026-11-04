@@ -395,9 +395,9 @@ Complete the table using the supplied scenario mapping, the SIB1 reference confi
 
 | Scenario | TDD setting | Traffic direction | Is the setting suitable for this direction? Why? |
 | --- | --- | --- | --- |
-| A | DL-heavy | Downlink | |
-| B | DL-heavy | Uplink | |
-| C | Balanced | Uplink | |
+| A | DL-heavy | Downlink | Yes. The DL-heavy pattern allocates the vast majority of time resources to downlink (104 DL symbols vs. 32 UL symbols per 5 ms), providing sufficient transmission opportunities for downlink traffic. |
+| B | DL-heavy | Uplink | No. The DL-heavy pattern allocates only 22.86% of symbols to uplink (32 UL symbols in 5 ms), which severely restricts uplink transmission opportunities and throughput under heavy uplink demand. |
+| C | Balanced | Uplink | Yes. The Balanced configuration provides twice as many uplink opportunities per unit time (64 UL symbols per 5 ms, 45.71% share) compared to DL-heavy, accommodating uplink traffic much more effectively. |
 
 Use these ideas:
 
@@ -410,6 +410,9 @@ Use these ideas:
 > The configuration captures show the reference broadcast TDD settings. The iperf3 JSON reports performance; it does not contain TDD parameters. The scenario captures are used for traffic analysis and need not include SIB1.
 
 **Question:** Why might Scenario C achieve better uplink throughput than Scenario B? Refer to your SIB1 diagrams and measured results.
+
+**Answer:**
+Scenario C achieves higher uplink throughput (~124.42 Mbps vs. ~109.12 Mbps in B) because the Balanced TDD configuration doubles the uplink transmission opportunities per unit time. As derived from SIB1, the Balanced configuration has a 2.5 ms periodicity (repeating twice in 5 ms) providing 64 UL symbols per 5 ms (45.71% share), whereas the DL-heavy configuration in Scenario B has a 5 ms periodicity providing only 32 UL symbols per 5 ms (22.86% share). The more frequent UL allocation reduces buffering delay at the UE and grants more airtime for sending UDP packets, directly leading to higher measured throughput.
 
 ## 8. Task 6 — Find GTP-U Information
 
@@ -430,13 +433,13 @@ Record the following information from one packet:
 
 | Item | Value |
 | --- | --- |
-| Scenario capture filename | |
-| Packet number | |
-| Outer source IP | |
-| Outer destination IP | |
-| Inner source IP | |
-| Inner destination IP | |
-| TEID | |
+| Scenario capture filename | scenario-a-dl-heavy-downlink.pcapng | scenario-b-dl-heavy-uplink.pcapng | scenario-c-balanced-uplink.pcapng |
+| Packet number | 1831 | 2065 | 1430 |
+| Outer source IP | 192.168.70.129 | 192.168.70.129 | 192.168.70.129 |
+| Outer destination IP | 192.168.70.134 | 192.168.70.134 | 192.168.70.134 |
+| Inner source IP | 10.0.0.6 | 10.0.0.6 | 10.0.0.6 |
+| Inner destination IP | 192.168.70.135 | 192.168.70.135 | 192.168.70.135 |
+| TEID | 0x00000011 | 0x00000012 | 0x00000013 |
 
 Meaning:
 
@@ -445,6 +448,14 @@ Meaning:
 - **TEID:** Identifies the GTP-U tunnel at the receiving endpoint.
 
 Take one screenshot showing the selected packet and these fields.
+- Scenario A
+  ![A Task 6](scenarioAtask6.png)
+
+- Scenario B
+  ![B Task 6](scenarioBtask6.png)
+
+- Scenario C
+  ![C Task 6](scenarioCtask6.png)
 
 > Some GTP packets are echo or control-related packets. Select one that contains an inner IPv4 packet.
 
