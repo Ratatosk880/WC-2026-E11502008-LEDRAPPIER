@@ -342,16 +342,23 @@ Use the supplied mapping between the reference configuration captures and scenar
 
 | Scenario | Reference TDD setting | JSON traffic direction | Configured UL symbol share (%) | Throughput (Mbps) | Packet loss (%) |
 | --- | --- | --- | ---: | ---: | ---: |
-| A | DL-heavy | | | | |
-| B | DL-heavy | | | | |
-| C | Balanced | | | | |
+| A | DL-heavy | Downlink | 22.86% | 90.654195836 | 0.442954627080091 |
+| B | DL-heavy | Uplink | 22.86% | 109.11724969 | 0.23565878306653645 |
+| C | Balanced | Uplink | 45.71% | 124.41674913 | 2.133919261135111 |
 
 Answer:
 
 1. Which decoded TDD parameters differ between DL-heavy and balanced?
+   - The parameters that differ are `dl-UL-TransmissionPeriodicity` (5 ms for DL-heavy vs. 2.5 ms for Balanced) and `nrofDownlinkSlots` (7 slots for DL-heavy vs. 2 slots for Balanced). The other parameters (`referenceSubcarrierSpacing`, `nrofDownlinkSymbols`, `nrofUplinkSlots`, and `nrofUplinkSymbols`) remain identical.
+
 2. Which configuration provides more configured UL symbols per unit time? Support your answer with the diagram and calculated share.
+   - The Balanced configuration provides more configured UL symbols per unit time. As shown in the diagrams and calculated tables, Balanced provides 64 UL symbols per 5 ms interval (a 45.71% configured UL share) compared to only 32 UL symbols per 5 ms interval (a 22.86% configured UL share) for the DL-heavy configuration.
+
 3. How does that difference help explain the B/C throughput comparison?
+   - Scenario C achieves higher uplink throughput (124.42 Mbps) than Scenario B (109.12 Mbps) because the Balanced configuration allocates twice as many UL transmission opportunities per unit time (64 UL symbols in 5 ms vs. 32 in DL-heavy). This higher density of uplink slots reduces buffering delays and accommodates more uplink data transmissions.
+
 4. Why can A and B use the same SIB1 TDD configuration even though their traffic directions differ?
+   - SIB1 broadcasts a common cell-level TDD frame structure (`tdd-UL-DL-ConfigurationCommon`) that defines the duplexing time slots for both downlink and uplink across the entire cell. The gNB dynamic MAC scheduler can then allocate available DL resources to DL traffic (as in Scenario A) or available UL resources to UL traffic (as in Scenario B) independently within that shared TDD framework.
 
 > More configured UL resources can provide more opportunities for uplink traffic, but they do not guarantee a proportional throughput increase. Scheduling, radio conditions, overhead, offered traffic, and other radio settings also affect the result. This comparison does not establish that the TDD pattern is the only cause of a performance difference. SIB1 does not show actual slot-by-slot data scheduling. Because the configuration captures were recorded separately, use them as references for the supplied settings, not as independent proof of what was broadcast during each original performance run.
 
@@ -377,8 +384,8 @@ nr-rrc.prach_ConfigurationIndex
 
 | TDD setting | SIB1 packet number | PRACH configuration index |
 | --- | ---: | ---: |
-| DL-heavy | | |
-| Balanced | | |
+| DL-heavy | 2 | 98 |
+| Balanced | 2 | 98 |
 
 PRACH is used to send a random-access preamble. Its configuration index is not the DL/UL slot ratio and does not directly explain iperf3 throughput. Equal indices in the two configurations are a valid observation. Drawing PRACH occasions requires additional parameters and the applicable TS 38.211 table; it is outside the required TDD drawing task.
 
