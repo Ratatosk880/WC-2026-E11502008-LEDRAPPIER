@@ -1,5 +1,3 @@
-<img width="1915" height="753" alt="image" src="https://github.com/user-attachments/assets/36c83eae-31a8-4206-9aef-e4940ca5a7dc" /># Lab 2: gNB TDD Traffic Analysis
-
 ## 1. Goal
 
 In this lab, you will compare three 5-second UDP iperf3 tests. You will learn how TDD slot allocation can affect downlink and uplink performance.
@@ -535,13 +533,28 @@ Record the scenario, display filter, packet numbers, and time interval.
 Answer each question in two or three sentences:
 
 1. Does Scenario A use a TDD setting that matches its traffic direction?
+   - Yes, Scenario A uses a DL-heavy configuration for downlink traffic. The pattern allocates 7 full DL slots and 6 DL symbols out of 10 slots per 5 ms period, dedicating the majority of time resources to downlink transmission.
+
 2. Why is Scenario B expected to have limited uplink resources? Cite a parameter or count from the DL-heavy SIB1 reference configuration.
+   - Scenario B is constrained because the DL-heavy configuration allocates only `nrofUplinkSlots = 2` full UL slots and `nrofUplinkSymbols = 4` partial UL symbols per 5 ms period. This results in only 32 UL symbols out of 140 total symbols, leaving an uplink symbol share of only 22.86%.
+
 3. How much does uplink throughput change from B to C?
+   - Uplink throughput increases from 109.12 Mbps in Scenario B to 124.42 Mbps in Scenario C. This represents an improvement of approximately 14.02% (or an absolute gain of 15.30 Mbps).
+
 4. What negative result, if any, is visible in C? Support your answer with packet loss or jitter values.
+   - Scenario C exhibits significantly higher packet loss and increased jitter compared to B. Packet loss rises from 0.24% in B to 2.13% in C (nearly a tenfold increase), while jitter increases from 0.116 ms to 0.162 ms.
+
 5. Why can increasing UL resources improve uplink throughput?
+   - Increasing UL resources provides more frequent transmission slots per unit time, which reduces packet buffering delay at the UE. This allows the UE to empty its transmission buffer faster and transmit more data packets over the air.
+
 6. Is adding more UL resources always the best solution? Explain using throughput and packet loss.
+   - No, because increasing throughput can come at the expense of higher packet loss and jitter under heavy load or queue congestion, as observed in Scenario C (2.13% loss vs. 0.24% in B). Furthermore, dedicating more resources to the uplink directly reduces downlink capacity.
+
 7. Suggest one simple follow-up test that could improve throughput without producing too much packet loss.
+   - A follow-up test could lower the iperf3 UDP target bandwidth (e.g., using `-b 115M` instead of saturating the link) to find the operating point before queue overflow occurs. Alternatively, testing TCP traffic instead of UDP would allow flow and congestion control to adjust transmission rates dynamically without excessive loss.
+
 8. What can the configuration captures tell you that the iperf3 JSON cannot? Why are separately recorded configuration captures not direct proof of the configuration during an earlier test?
+   - Configuration captures provide the cell-level radio frame structure broadcast in SIB1 (such as periodicity, slot allocations, and subcarrier spacing), which are completely absent from iperf3 application-level JSON logs. However, because they were recorded in separate sessions, they do not prove what exact system information or dynamic scheduling was active during the earlier performance runs.
 
 ## 12. Submission Checklist
 
