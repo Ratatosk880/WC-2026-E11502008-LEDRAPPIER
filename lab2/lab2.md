@@ -1,4 +1,4 @@
-# Lab 2: gNB TDD Traffic Analysis
+<img width="1915" height="753" alt="image" src="https://github.com/user-attachments/assets/36c83eae-31a8-4206-9aef-e4940ca5a7dc" /># Lab 2: gNB TDD Traffic Analysis
 
 ## 1. Goal
 
@@ -475,13 +475,16 @@ Record the number of displayed packets:
 
 | Scenario | Displayed TCP retransmissions |
 | --- | ---: |
-| A | |
-| B | |
-| C | |
+| A | 14 |
+| B | 12 |
+| C | 12 |
 
 > Report the number displayed by Wireshark using the specified filter. Counts may vary with Wireshark analysis settings. Include screenshots showing the filter and displayed count for each scenario. The filter includes any TCP flows that Wireshark can decode in the capture; a displayed retransmission is not, by itself, proof of loss in the UDP test.
 
 **Question:** Do these TCP retransmissions directly represent lost UDP performance packets?
+
+**Answer:**
+No, these TCP retransmissions do not directly represent lost UDP performance packets. The performance data is carried over independent UDP streams, which are connectionless and do not retransmit dropped packets. The filter `tcp.analysis.retransmission` exclusively tracks retransmitted segments belonging to the separate iperf3 TCP control session, not the actual UDP data loss reported in `lost_percent`.
 
 ## 10. Task 8 — RTT and Packet Interval
 
@@ -499,7 +502,9 @@ Select one packet from the iperf3 TCP control connection and record its ACK RTT:
 
 | Scenario | Packet number | Example TCP ACK RTT |
 | --- | ---: | --- |
-| A, B, or C | | |
+| A | 1833 | 485 µs |
+
+![scenario A task 8](screenshots/scenarioAtask8.png)
 
 This value is the RTT of the TCP control connection. It is not the RTT of the UDP data packets.
 
@@ -519,7 +524,9 @@ Record the scenario, display filter, packet numbers, and time interval.
 
 | Scenario | Display filter | Packet numbers | Time interval |
 | --- | --- | --- | --- |
-| | | | |
+| A | tcp.analysis.ack_rtt && udp | 1833 and 1842 | 18.162 ms |
+
+![scenario 1 task 8 2](screenshots/scenarioAtask8_2.png)
 
 **Note:** The time interval depends on the applied display filter. Make sure the selected packets are distinct data packets, not duplicated observations from different capture points. Do not use their interval to infer the TDD slot pattern.
 
