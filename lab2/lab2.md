@@ -270,6 +270,44 @@ Use **D = downlink**, **U = uplink**, and **F = flexible**. Include a legend, th
 
 If `pattern2` is present, draw `pattern1` followed by `pattern2`; the combined sequence repeats. Label each pattern boundary and show the full combined duration.
 
+#### TDD Allocation Diagrams (0–5 ms)
+
+**Legend:**
+- `D`: Downlink symbol/slot
+- `U`: Uplink symbol/slot
+- `F`: Flexible symbol
+- `M`: Mixed slot (contains D, F, and U symbols)
+
+**1. DL-heavy Configuration (Period = 5 ms, 1 repetition in 5 ms):**
+```text
+Time (ms)  : 0.0                                                                    5.0
+Slot index : |  0  |  1  |  2  |  3  |  4  |  5  |  6  |     7 (M)     |  8  |  9  |
+Slot type  : |  D  |  D  |  D  |  D  |  D  |  D  |  D  | 6D | 4F | 4U  |  U  |  U  |
+             |<--------------------------- Pattern 1 (5 ms) ----------------------->|
+```
+
+*Mixed Slot 7 symbol details (14 OFDM symbols):*
+```text
+Symbol index : | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 |
+Direction    : | D | D | D | D | D | D | F | F | F | F |  U |  U |  U |  U |
+```
+
+**2. Balanced Configuration (Period = 2.5 ms, 2 repetitions in 5 ms):**
+```text
+Time (ms)  : 0.0                       2.5 (Boundary)                  5.0
+Slot index : |  0  |  1  |    2 (M)    |  3  |  4  |  0  |  1  |    2 (M)    |  3  |  4  |
+Slot type  : |  D  |  D  | 6D | 4F | 4U|  U  |  U  |  D  |  D  | 6D | 4F | 4U|  U  |  U  |
+             |<------- Repetition 1 (2.5 ms) ----->|<------- Repetition 2 (2.5 ms) ----->|
+```
+
+*Mixed Slots (Slot 2 in each repetition) symbol details (14 OFDM symbols):*
+```text
+Symbol index : | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 |
+Direction    : | D | D | D | D | D | D | F | F | F | F |  U |  U |  U |  U |
+```
+
+---
+
 First, count the symbols over **one complete repeating sequence** for each configuration. The two sequences may have different durations, so their raw UL symbol counts alone cannot be used to compare resources per unit time:
 
 ```text
@@ -283,17 +321,20 @@ For two patterns, sum the counts and durations of both patterns before calculati
 
 | TDD setting | Repeating duration (ms) | Total reference slots | DL symbols | UL symbols | Flexible symbols | Configured UL symbol share (%) |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| DL-heavy | | | | | | |
-| Balanced | | | | | | |
+| DL-heavy | 5 | 10 | 104 | 32 | 4 | 22.86% |
+| Balanced | 2.5 | 5 | 34 | 32 | 4 | 45.71% |
 
 Next, count the symbols over the **same 5 ms interval** shown in your diagrams. Multiply each per-sequence count by the number of complete repetitions in 5 ms. For these captures, 5 ms contains a whole number of repetitions for both configurations.
 
 | TDD setting | Repeating duration (ms) | Repetitions in 5 ms | DL symbols in 5 ms | UL symbols in 5 ms | Flexible symbols in 5 ms |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| DL-heavy | | | | | |
-| Balanced | | | | | |
+| DL-heavy | 5 | 1 | 104 | 32 | 4 |
+| Balanced | 2.5 | 2 | 68 | 64 | 8 |
 
 **Question:** Can two patterns have the same UL symbol count per period but provide different numbers of UL symbols per unit time? Explain using your two tables.
+
+**Answer:**
+Yes. As shown in the first table, both configurations have exactly 32 UL symbols per repeating period. However, the Balanced configuration has a shorter period (2.5 ms) compared to DL-heavy (5 ms). Consequently, as shown in the second table, the Balanced pattern repeats twice as often over the same 5 ms interval, providing 64 UL symbols in 5 ms compared to only 32 UL symbols for DL-heavy.
 
 ### 4.5 Connect SIB1 to the Performance Results
 
