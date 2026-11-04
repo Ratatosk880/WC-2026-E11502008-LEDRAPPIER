@@ -480,6 +480,15 @@ Record the number of displayed packets:
 | B | 12 |
 | C | 12 |
 
+Scenario A 
+![scenario a](screenshots/scenarioAtask7.png)
+
+Scenario B
+![scenario b](screenshots/scenarioBtask7.png)
+
+Scenario C
+![scenario c](screenshots/scenarioCtask7.png)
+
 > Report the number displayed by Wireshark using the specified filter. Counts may vary with Wireshark analysis settings. Include screenshots showing the filter and displayed count for each scenario. The filter includes any TCP flows that Wireshark can decode in the capture; a displayed retransmission is not, by itself, proof of loss in the UDP test.
 
 **Question:** Do these TCP retransmissions directly represent lost UDP performance packets?
