@@ -91,9 +91,9 @@ Complete the table:
 
 | Scenario | Direction | Throughput (Mbps) |
 | --- | --- | ---: |
-| A | Downlink | |
-| B | Uplink | |
-| C | Uplink | |
+| A | Downlink | 90.654195836 |
+| B | Uplink | 109.11724969 |
+| C | Uplink | 124.41674913 |
 
 Calculate how much C improves over B:
 
@@ -104,9 +104,16 @@ Improvement (%) = (C - B) ÷ B × 100
 Answer:
 
 1. What is the downlink throughput in Scenario A?
-2. What is the uplink throughput in Scenario B?
-3. Is the uplink throughput higher in B or C?
-4. By approximately what percentage does C improve over B?
+   - It is 90.654195836 Mbps.
+     ![Scenario A Task 2](screeshots/scenarioAtask2.png)
+3. What is the uplink throughput in Scenario B?
+   - It is 109.11724969 Mbps.
+     ![Scenario B Task 2](screeshots/scenarioBtask2.png)
+5. Is the uplink throughput higher in B or C?
+   - It is higher in C than in B : 124.41674913 > 109.11724969.
+     ![Scenario C Task 2](screeshots/scenarioCtask2.png)
+7. By approximately what percentage does C improve over B?
+   - It is approximately an improvement of 14.02% => (( 124.41674913−109.11724969)÷109.11724969)×100 = 14,021155668)
 
 > Use the JSON `bits_per_second` value. Do not recalculate throughput using the other time fields.
 
