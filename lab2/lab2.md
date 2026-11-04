@@ -105,14 +105,14 @@ Answer:
 
 1. What is the downlink throughput in Scenario A?
    - It is 90.654195836 Mbps.
-     ![Scenario A Task 2](screeshots/scenarioAtask2.png)
-3. What is the uplink throughput in Scenario B?
+     ![Scenario A Task 2](screenshots/scenarioAtask2.png)
+2. What is the uplink throughput in Scenario B?
    - It is 109.11724969 Mbps.
-     ![Scenario B Task 2](screeshots/scenarioBtask2.png)
-5. Is the uplink throughput higher in B or C?
+     ![Scenario B Task 2](screenshots/scenarioBtask2.png)
+3. Is the uplink throughput higher in B or C?
    - It is higher in C than in B : 124.41674913 > 109.11724969.
-     ![Scenario C Task 2](screeshots/scenarioCtask2.png)
-7. By approximately what percentage does C improve over B?
+     ![Scenario C Task 2](screenshots/scenarioCtask2.png)
+4. By approximately what percentage does C improve over B?
    - It is approximately an improvement of 14.02% => (( 124.41674913−109.11724969)÷109.11724969)×100 = 14,021155668)
 
 > Use the JSON `bits_per_second` value. Do not recalculate throughput using the other time fields.
@@ -130,14 +130,17 @@ Complete the table:
 
 | Scenario | Throughput (Mbps) | Packet loss (%) | Jitter (ms) |
 | --- | ---: | ---: | ---: |
-| B | | | |
-| C | | | |
+| B | 109.11724969 | 0.23565878306653645 | 0.11619665995310689 |
+| C | 124.41674913  | 2.133919261135111 | 0.16204804777679407 |
 
 Answer:
 
 1. Does C have higher uplink throughput than B?
+   - Yes, C have higher uplink throughput than B. 
 2. Does C have lower packet loss than B?
+   - No, C have higher packet loss percentage than B, approximately 10 times more (~2.13% compared to ~0.24%)
 3. What trade-off, if any, is visible when changing from B to C?
+   - Compared with Scenario B, Scenario C has higher throughput, higher packet loss, and higher jitter. These results suggest that ther are more Uplink scheduling opportunities
 
 A simple answer format is:
 
