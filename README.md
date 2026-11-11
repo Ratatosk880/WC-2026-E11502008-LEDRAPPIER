@@ -8,7 +8,7 @@
 
 ## :notebook_with_decorative_cover: Assignment
 
-- **LAB1: Analyzing UE–gNB Connectivity in an OAI 5G SA Network **
+- **LAB1: Analyzing UE–gNB Connectivity in an OAI 5G SA Network**
     - Assignment Information: [Lab1](https://hackmd.io/A4w9WqU8R4mYgvaWxj6J1A?view)
     - **Deadline : 12:00, Sep. 28**
     - Goal:
@@ -17,7 +17,7 @@ In this lab, you will use Wireshark to analyze how a UE establishes an RRC conne
     -  [ ] Peer review : [Vote the Top3](https://docs.google.com/forms/d/e/1FAIpQLSeY8uVnBUwJ6l6CwQ6arx3JHthTJupHBeA2WwyD-EUIYqHHrg/viewform?usp=publish-editor) (DL: 23:59, Sep. 30)
       
 
-- **LAB2 : gNB TDD Traffic Analysis
+- **LAB2 : gNB TDD Traffic Analysis**
     -  Assignment Information: [Lab2](https://hackmd.io/@Z4OmT2gcTXeLxBPXrn-2SQ/BJkbO0juze)
     -  **Deadline : 12:00, Oct. 5**
     - Goal:
