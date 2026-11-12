@@ -210,25 +210,44 @@ Complete the table:
 
 | Scenario | ICMP Payload | Avg. RTT (ms) | Max. RTT (ms) | Packet Loss (%) |
 |---|---:|---:|---:|---:|
-| A | 56 bytes | | | |
-| B | 512 bytes | | | |
-| C | 1200 bytes | | | |
+| A | 56 bytes | 19.571 | 25.085 | 0% |
+| B | 512 bytes | 21.554 | 28.772 | 0% |
+| C | 1200 bytes | 25.217 | 30.871 | 0% |
 
-Calculate the RTT difference:
+**RTT Difference Calculation:**
 
 ```text
 RTT Difference = Average RTT(C) - Average RTT(A)
+RTT Difference = 25.217 ms - 19.571 ms = 5.646 ms
 ```
 
 **Questions:**
 
-1. Which scenario has the highest average RTT?
-2. Does increasing packet size always increase RTT in your measurements?
-3. Why might a larger packet require more transmission or processing resources?
-4. What factors other than packet size could affect RTT in a software-based 5G network?
-5. Can these results be interpreted as real over-the-air 5G latency? Explain.
+**1. Which scenario has the highest average RTT?**
+Scenario C (1200 bytes) has the highest average RTT at **25.217 ms**, followed by Scenario B (**21.554 ms**) and Scenario A (**19.571 ms**).
+
+**2. Does increasing packet size always increase RTT in your measurements?**
+On average, yes (`19.571 ms` → `21.554 ms` → `25.217 ms`). However, on a per-packet basis, no: for example, `icmp_seq=11` in Scenario C (`18.8 ms`) was faster than `icmp_seq=1` in Scenario A (`25.1 ms`) due to TDD slot alignment and host scheduling jitter.
+
+**3. Why might a larger packet require more transmission or processing resources?**
+Larger packets require more Physical Resource Blocks (PRBs) or RLC segmentation across multiple TDD slots, as well as more CPU cycles for PDCP encryption, LDPC channel coding/decoding, and memory copies across the virtual interfaces.
+
+**4. What factors other than packet size could affect RTT in a software-based 5G network?**
+Host OS CPU scheduling contention (all processes share the same machine), 5G TDD slot waiting times, Scheduling Request/Buffer Status Report (SR/BSR) delays, and TCP loopback buffering in RFsimulator.
+
+**5. Can these results be interpreted as real over-the-air 5G latency? Explain.**
+No. RFsimulator replaces physical RF hardware and wireless propagation with local TCP sockets, so the measured RTT reflects host CPU processing and software buffering rather than real over-the-air radio latency.
 
 Do not assume that RTT must increase with packet size. Use your measured values to support your explanation.
+
+- Scenario A:
+  ![scenarioA](screenshots/scenarioA.png)
+
+- Scenario B:
+  ![scenarioB](screenshots/scenarioB.png)
+
+- Scenario C:
+  ![scenarioC](screenshots/scenarioC.png)
 
 ## 7. Task 5 — Diagnose a Controlled UE Registration Failure
 
@@ -270,12 +289,12 @@ Complete the table:
 
 | Item | Observation |
 |---|---|
-| Modified parameter | |
-| UE synchronized with gNB? | |
-| RRC connection established? | |
-| Registration successful? | |
-| Error or rejection evidence | |
-| Likely cause | |
+| Modified parameter | `--uicc0.imsi 001010000000099` (changed from `001010000000001`) |
+| UE synchronized with gNB? | Yes |
+| RRC connection established? | Yes (evidenced by the AMF receiving `InitialUEMessage` via NGAP from the gNB containing the NAS Registration Request) |
+| Registration successful? | No (`5GMM-DEREGISTERED`) |
+| Error or rejection evidence | `Got UE Authentication from AUSF: {"cause":"CONTEXT_NOT_FOUND","detail":"Resource corresponding to User imsi-001010000000099 not found","status":404}`, followed by `Request Authentication Vectors failure`, `5GMM state transition: COMM-PROC-INIT -> 5GMM-DEREGISTERED (event: [REGISTRATION_REJECT_SENT])`, and `Registration-Reject message buffer 7e 00 44 03` (5GMM Cause #3: Illegal UE) |
+| Likely cause | Subscriber IMSI `001010000000099` is not provisioned in the CN5G UDR/MySQL subscriber database, causing AUSF authentication vector retrieval to fail with HTTP 404 |
 
 If the expected registration rejection does not appear, report the actual logs instead of inventing a failure message.
 
@@ -291,12 +310,25 @@ Confirm that the UE successfully registers again and that Ping works.
 
 **Questions:**
 
-1. Why can the UE potentially synchronize with the gNB even when the IMSI is incorrect?
-2. Which network function is involved in UE authentication?
-3. Why does changing an IMSI affect Registration but not the RFsimulator TCP connection itself?
-4. What evidence proves that restoring the correct configuration solved the problem?
+**1. Why can the UE potentially synchronize with the gNB even when the IMSI is incorrect?**
+Cell synchronization (detecting PSS/SSS and decoding PBCH/MIB/SIB1) uses broadcast physical-layer signals transmitted by the gNB without requiring any subscriber identity or authentication. Because these radio parameters (band n78, 30 kHz SCS, frequency) match, the UE synchronizes at the PHY layer before the core network ever inspects its IMSI.
+
+**2. Which network function is involved in UE authentication?**
+The **AUSF** (Authentication Server Function) handles UE authentication on behalf of the AMF, retrieving subscriber credentials and authentication vectors from the **UDM** (Unified Data Management) and **UDR** (Unified Data Repository).
+
+**3. Why does changing an IMSI affect Registration but not the RFsimulator TCP connection itself?**
+The RFsimulator TCP connection on port `4043` only emulates the physical radio transport layer (exchanging IQ samples between the UE and gNB processes). The IMSI is a Non-Access Stratum (NAS) subscriber identifier processed at the 5G Core control plane (AMF/AUSF/UDM), completely independent of the underlying radio transport channel.
+
+**4. What evidence proves that restoring the correct configuration solved the problem?**
+In the AMF logs (`docker compose logs oai-amf`), IMSI `001010000000001` transitions back to `5GMM-REGISTERED` instead of receiving a `Registration Reject`; in the nrUE logs, `Registration Accept`, `PDU Session Establishment Accept`, and `oaitun_ue1` creation reappear; and a `ping -I oaitun_ue1 192.168.70.135` succeeds with `0% packet loss`.
 
 Submit evidence from both the failed and recovered connections.
+
+- UE failed :
+  ![uebad](screenshots/uebad.png)
+
+- UE recovered :
+  ![uegood](screenshots/uegood.png)
 
 
 ## 8. Task 7 — Explain the Relationship Between Simulation and Real 5G
