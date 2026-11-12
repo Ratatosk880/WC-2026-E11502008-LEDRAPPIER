@@ -118,21 +118,27 @@ Complete the table:
 
 | Item | Observed Value |
 |---|---|
-| gNB process ID | |
-| nrUE process ID | |
-| RFsimulator transport protocol | |
-| RFsimulator port | |
-| TCP connection state | |
-| Connected process(es) | |
+| gNB process ID | `92281` (sudo parent: `92293`) |
+| nrUE process ID | `92686` (sudo parent: `92687`) |
+| RFsimulator transport protocol | TCP |
+| RFsimulator port | `4043` |
+| TCP connection state | `ESTAB` (and `LISTEN` on gNB) |
+| Connected process(es) | `nr-softmodem` (PID `92281`) and `nr-uesoftmodem` (PID `92686`) |
 
-Take one screenshot showing the TCP connection.
+Take one screenshot showing the TCP connection :
+  ![task2](screenshots/task2.png)
 
 **Questions:**
 
-1. Why does RFsimulator use a TCP connection instead of a physical antenna?
-2. Are the TCP packets exchanged by RFsimulator the same as the UE's application-layer IP packets?
-3. Does using RFsimulator mean that the UE and gNB are performing no physical-layer processing? Explain.
+1. **Why does RFsimulator use a TCP connection instead of a physical antenna?**
+   RFsimulator replaces physical radio frequency (RF) transceivers (such as USRP hardware) and over-the-air propagation with a software-based transport channel over loopback (`127.0.0.1`). Using TCP guarantees reliable, ordered, and lossless delivery of baseband IQ samples between the gNB and the nrUE processes without requiring physical antennas, RF cabling, or spectrum licensing.
 
+2. **Are the TCP packets exchanged by RFsimulator the same as the UE's application-layer IP packets?**
+   No. The TCP packets sent over port `4043` carry raw time-domain baseband IQ samples representing the modulated 5G NR radio waveform at the physical layer. In contrast, the UE's application-layer IP packets (such as ICMP Ping traffic on `oaitun_ue1`) are user-plane payloads that get encapsulated across the full 5G protocol stack (SDAP, PDCP, RLC, MAC), modulated into OFDM symbols by the PHY layer, and only then transmitted inside those IQ sample streams.
+
+3. **Does using RFsimulator mean that the UE and gNB are performing no physical-layer processing? Explain.**
+   No. Both `nr-softmodem` and `nr-uesoftmodem` still execute the full 5G NR physical-layer (PHY) signal processing pipeline, including channel coding (LDPC/Polar), scrambling, QAM modulation/demodulation, resource block mapping, OFDM modulation (IFFT/FFT), and synchronization. RFsimulator only bypasses the digital-to-analog/analog-to-digital conversion (DAC/ADC) and physical RF front-end antennas by exchanging the resulting digital IQ samples directly over TCP.
+   
 ## 5. Task 3 — Verify End-to-End Connectivity
 
 Check the UE tunnel interface:
