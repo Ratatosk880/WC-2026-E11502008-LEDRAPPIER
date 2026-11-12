@@ -53,23 +53,39 @@ Start the gNB and nrUE using the commands in the Build Guide.
 
 Observe their terminal outputs and locate evidence of the following stages.
 
-| Stage | Successful? | Evidence from logs |
+Stage | Successful? | Evidence from logs |
 |---|---|---|
-| CN5G initialization | | |
-| gNB NG Setup | | |
-| UE synchronization | | |
-| RRC connection establishment | | |
-| UE Registration | | |
-| PDU Session Establishment | | |
-| UE tunnel creation | | |
+| CN5G initialization | Yes | **Terminal 1 (`docker compose ps`):** All core network containers (`oai-amf`, `oai-smf`, `oai-upf`, `oai-ausf`, `oai-udm`, `oai-udr`, `oai-nrf`, `oai-ext-dn`, `mysql`) show the status `Up` or `Up (healthy)`. |
+| gNB NG Setup | Yes | **Terminal 2 (gNB):** `[NGAP] Send NGSetupRequest to AMF` followed by `[NGAP] Received NGSetupResponse from AMF` (and in AMF logs: `Connected gNB` with the `gNB-ID`). |
+| UE synchronization | Yes | **Terminal 3 (nrUE):** `[PHY] Initial sync successful, PCI: 0` (confirms PSS/SSS detection, PBCH/MIB decoding, and time/frequency synchronization with the cell). |
+| RRC connection establishment | Yes | **Terminal 3 (nrUE) & Terminal 2 (gNB):** Random Access Msg1–Msg4 exchange (`[MAC] [UE 0] Send PRACH`, `Received RAR`), followed by `[RRC] [UE 0] State = NR_RRC_CONNECTED` (and `RRCSetupComplete` on the gNB side). |
+| UE Registration | Yes | **Terminal 3 (nrUE) & AMF logs:** On UE: `[NAS] [UE 0] Received Registration Accept` and `Registration Complete` sent. On AMF (`docker logs oai-amf`): UE (IMSI `001010000000001`) transitions to `5GMM-REGISTERED`. |
+| PDU Session Establishment | Yes | **Terminal 3 (nrUE) & SMF logs:** On UE: `[NAS] Received PDU Session Establishment Accept` (including IP address allocation, e.g., `10.0.0.2` or `12.1.1.2`). On gNB: `PDU Session Resource Setup Request/Response`. |
+| UE tunnel creation | Yes | **Terminal 3 (nrUE) & Terminal 4:** In UE logs: `Interface oaitun_ue1 successfully configured, ip address ...`. Verified via `ip addr show oaitun_ue1` showing the `UP` interface with its assigned IPv4 address. |
 
-Take screenshots showing the gNB and UE successfully connected.
+Take screenshots showing the gNB and UE successfully connected: 
+
+- Docker :
+  ![docker](screenshots/docker.png)
+
+- gNB :
+  ![gnb](screenshots/gnb.png)
+
+- UE :
+  ![ue](screenshots/nrue.png)
+
+
 
 **Questions:**
 
-1. Does a successful NG Setup guarantee that a UE can register? Explain.
-2. Why can the UE establish an RRC connection but still fail Registration?
-3. What additional procedure is required after Registration before user data can be exchanged?
+1. **Does a successful NG Setup guarantee that a UE can register? Explain.**
+   No. A successful NG Setup only verifies that the N2 interface (SCTP/NGAP) between the gNB and the AMF is operational and that their RAN/Core configurations (such as PLMN ID and TAC) are compatible. UE registration depends on additional end-to-end conditions, including successful radio synchronization and RRC connection establishment over the air interface, valid subscriber credentials (IMSI, K, OPc) provisioned in the UDM/UDR database, and functional signaling between the AMF, AUSF, UDM, and UDR.
+
+2. **Why can the UE establish an RRC connection but still fail Registration?**
+   RRC connection establishment occurs strictly at the Access Stratum (AS) level between the UE and the gNB, before any subscriber identity verification takes place. Once the RRC connection is established, the UE sends a NAS Registration Request that the gNB forwards to the AMF. Registration can still fail at the Non-Access Stratum (NAS) level due to an unknown or unprovisioned IMSI in the core network database, mismatched authentication keys (5G-AKA failure), an unsupported slice (S-NSSAI), or PLMN/tracking area restrictions.
+
+3. **What additional procedure is required after Registration before user data can be exchanged?**
+   After Registration, the UE must complete the **PDU Session Establishment** procedure. This procedure sets up the user-plane path (N3 GTP-U tunnel between the gNB and UPF, plus the Data Radio Bearers between the gNB and UE), allocates an IP address to the UE, and configures the local virtual tunnel interface (`oaitun_ue1`) so user-plane IP traffic can flow to and from the External Data Network.
 
 ## 4. Task 2 — Investigate RFsimulator Communication
 
