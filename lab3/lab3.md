@@ -339,30 +339,45 @@ Complete the comparison:
 
 | Feature | OAI RFsimulator | Physical 5G System |
 |---|---|---|
-| gNB and UE protocol stack | | |
-| OFDM signal processing | | |
-| Physical antennas | | |
-| RF hardware impairments | | |
-| Wireless propagation effects | | |
-| 5G Core connectivity | | |
+| gNB and UE protocol stack | Full 5G NR protocol stack executed in software (PHY, MAC, RLC, PDCP, SDAP, RRC, NAS) | Full 5G NR protocol stack executed across dedicated RAN hardware/ASICs/FPGAs and commercial UE modems |
+| OFDM signal processing | Executed in software (IFFT/FFT, channel coding, modulation/demodulation generating baseband IQ samples) | Executed in real time via dedicated DSPs/FPGAs/ASICs paired with DAC/ADC converters |
+| Physical antennas | None (replaced by a local TCP socket on loopback `127.0.0.1:4043`) | Physical MIMO antenna arrays transmitting and receiving electromagnetic waves |
+| RF hardware impairments | Absent by default (ideal digital IQ transfer without phase noise, PA non-linearity, or IQ imbalance) | Present (oscillator drift, phase noise, power amplifier distortion, thermal noise, quantization noise) |
+| Wireless propagation effects | Absent by default (lossless TCP transport without fading, multipath, path loss, or Doppler shift) | Present (free-space path loss, shadowing, multipath fading, interference, Doppler effects) |
+| 5G Core connectivity | Real 5G Core (OAI CN5G over standard N2/NGAP and N3/GTP-U interfaces) | Real 5G Core (commercial or open-source 5GC over standard N2/NGAP and N3/GTP-U interfaces) |
 
 **Questions:**
 
-1. Which parts of the 5G system remain functional when physical RF hardware is replaced with RFsimulator?
-2. Why is RFsimulator useful for testing the 5G protocol stack?
-3. Why might latency and throughput differ between RFsimulator and a real 5G deployment?
-4. What would need to change if you wanted to test a physical UE instead of OAI nrUE?
+**1. Which parts of the 5G system remain functional when physical RF hardware is replaced with RFsimulator?**
+The entire 5G Core Network (AMF, SMF, UPF, AUSF, UDM, UDR, NRF), the N2 (NGAP) and N3 (GTP-U) interfaces, the complete gNB and UE protocol stacks (NAS, RRC, SDAP, PDCP, RLC, MAC), and the baseband digital PHY signal processing (channel coding, modulation, OFDM) remain fully functional. Only the DAC/ADC conversion, RF transceivers, physical antennas, and wireless air channel are replaced by the TCP IQ sample stream.
+
+**2. Why is RFsimulator useful for testing the 5G protocol stack?**
+RFsimulator allows developers and researchers to deploy, debug, and validate end-to-end 5G Standalone signaling procedures, core network integration, and upper-layer protocol behavior on standard computing hardware without the high cost, licensing requirements, cabling complexity, or RF interference variables of physical SDRs and antennas.
+
+**3. Why might latency and throughput differ between RFsimulator and a real 5G deployment?**
+In RFsimulator, all components share general-purpose host CPUs and exchange IQ samples over OS TCP loopback sockets, introducing OS scheduling jitter, CPU bottlenecks, and TCP buffering delays while eliminating physical over-the-air propagation delay and retransmissions. Conversely, a real 5G deployment uses hardware-accelerated baseband processing for strict real-time slot deadlines and higher peak throughput, but experiences actual wireless propagation delay, channel fading, and HARQ retransmissions.
+
+**4. What would need to change if you wanted to test a physical UE instead of OAI nrUE?**
+You would need to replace RFsimulator with physical RF front-end hardware (such as a USRP SDR connected to the gNB host with appropriate antennas and duplexers/attenuators), launch `nr-softmodem` without the `--rfsim` flag using a hardware-specific RF configuration, and provision a physical programmable USIM card matching the IMSI, K, OPc, and PLMN configured in the OAI CN5G subscriber database.
 
 ## 9. Final Analysis
 
 Answer each question in three to five sentences.
 
-1. Describe the complete process from starting the OAI 5GC to successful user-plane connectivity.
-2. Explain the difference between an RFsimulator TCP connection and a 5G PDU Session.
-3. Based on your measurements, how did packet size affect RTT and packet loss?
-4. Describe the registration failure you introduced and explain how you diagnosed and recovered from it.
-5. Identify two limitations of this simulated environment and explain how they might affect experimental results.
+**1. Describe the complete process from starting the OAI 5GC to successful user-plane connectivity.**
+First, the OAI 5G Core containers are initialized via Docker Compose, establishing the Service-Based Architecture (NRF, AUSF, UDM, UDR, AMF, SMF) and the user-plane function (UPF). Next, the gNB starts and completes the NG Setup procedure over SCTP/NGAP with the AMF, while the nrUE synchronizes to the gNB's broadcast signals (PSS/SSS/PBCH) over RFsimulator and establishes an RRC connection via Random Access. The UE then sends a NAS Registration Request, which the AMF authenticates through the AUSF/UDM/UDR before returning a Registration Accept. Finally, the UE triggers PDU Session Establishment with the SMF and UPF, setting up the N3 GTP-U tunnel, allocating IP address `10.0.0.2` to the `oaitun_ue1` interface, and enabling end-to-end IP traffic to `192.168.70.135`.
 
+**2. Explain the difference between an RFsimulator TCP connection and a 5G PDU Session.**
+An RFsimulator TCP connection (on port `4043`) is a simulation-only transport mechanism that replaces the physical wireless air interface by carrying raw baseband IQ samples between the `nr-softmodem` and `nr-uesoftmodem` processes. In contrast, a 5G PDU Session is a standard 3GPP logical user-plane connection established between the UE and the Data Network through the gNB and UPF via Data Radio Bearers and an N3 GTP-U tunnel. While the RFsimulator TCP stream transports physical-layer radio waveforms, the PDU Session carries actual encapsulated user IP packets (such as ICMP Ping traffic on `oaitun_ue1`).
+
+**3. Based on your measurements, how did packet size affect RTT and packet loss?**
+Across the three 30-packet test scenarios, increasing the ICMP payload size caused the average RTT to increase steadily from `19.571 ms` (56 bytes) to `21.554 ms` (512 bytes) and `25.217 ms` (1200 bytes), yielding a `5.646 ms` difference between Scenarios C and A. Maximum RTT followed the same upward trend (`25.085 ms`, `28.772 ms`, and `30.871 ms`) due to higher radio resource allocation (PRBs/RLC segmentation) and increased CPU processing per packet. Packet loss remained at `0%` across all scenarios because RFsimulator transmits IQ samples over a lossless local TCP loopback socket without wireless channel interference or fading.
+
+**4. Describe the registration failure you introduced and explain how you diagnosed and recovered from it.**
+We introduced a controlled failure by launching `nr-uesoftmodem` with an unprovisioned subscriber identity (`--uicc0.imsi 001010000000099`) while keeping the CN5G and gNB running. By inspecting the AMF logs (`docker compose logs oai-amf`), we observed that the UE completed radio synchronization and RRC setup, but the AUSF returned HTTP `404` (`CONTEXT_NOT_FOUND` for `imsi-001010000000099`), causing the AMF to send a NAS `Registration Reject` (`7e 00 44 03`) and leave the UE in `5GMM-DEREGISTERED`. To recover, we stopped the nrUE and restarted it with the provisioned IMSI (`001010000000001`), which restored `5GMM-REGISTERED` status, recreated `oaitun_ue1`, and confirmed connectivity via Ping with `0%` packet loss.
+
+**5. Identify two limitations of this simulated environment and explain how they might affect experimental results.**
+First, RFsimulator eliminates physical RF hardware impairments and wireless channel propagation effects (such as path loss, multipath fading, and interference), resulting in an unrealistic `0%` packet loss and ideal radio link conditions that do not reflect over-the-air 5G behavior. Second, running the 5G Core containers, gNB, and nrUE concurrently on a single general-purpose Ubuntu host introduces OS CPU scheduling jitter and resource contention. Consequently, measured latency and throughput reflect host CPU processing overhead and software buffering rather than real-time hardware-accelerated 5G radio performance.
 ## 10. Submission Checklist
 
 Submit one Markdown or PDF report containing:
