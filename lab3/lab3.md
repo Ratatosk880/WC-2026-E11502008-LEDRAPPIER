@@ -157,22 +157,28 @@ Record:
 
 | Measurement | Observed Value |
 |---|---|
-| UE IP address | |
-| Destination IP | |
-| Packets transmitted | |
-| Packets received | |
-| Packet loss (%) | |
-| Minimum RTT (ms) | |
-| Average RTT (ms) | |
-| Maximum RTT (ms) | |
+| UE IP address | `10.0.0.2` |
+| Destination IP | `192.168.70.135` |
+| Packets transmitted | `10` |
+| Packets received | `10` |
+| Packet loss (%) | `0%` |
+| Minimum RTT (ms) | `10.595` |
+| Average RTT (ms) | `19.989` |
+| Maximum RTT (ms) | `30.077` |
 
-Take a screenshot of the Ping result.
+Take a screenshot of the Ping result :
+  ![task3](screenshots/task3.png)
 
 **Questions:**
 
-1. Why must Ping use the `oaitun_ue1` interface in this experiment?
-2. Does successful Registration guarantee successful user-plane connectivity?
-3. What does a successful Ping prove, and what does it not prove about the simulated 5G system?
+1. **Why must Ping use the `oaitun_ue1` interface in this experiment?**
+   Because all components (CN5G, gNB, nrUE, and the External DN container) run on the same Ubuntu host, omitting `-I oaitun_ue1` would cause the Linux kernel to route the Ping packets directly through the local Docker bridge network (`oai-cn5g`) instead of the 5G stack. Binding Ping to `oaitun_ue1` forces the ICMP traffic to enter the nrUE tunnel interface, traverse the 5G NR radio stack (SDAP/PDCP/RLC/MAC/PHY over RFsimulator) to the gNB, and pass through the N3 GTP-U tunnel to the UPF before reaching the External DN.
+
+2. **Does successful Registration guarantee successful user-plane connectivity?**
+   No. Registration only establishes control-plane signaling (5GMM) between the UE and the AMF. User-plane connectivity requires a subsequent PDU Session Establishment (5GSM) involving the SMF and UPF, proper configuration of the N3 GTP-U tunnel between the gNB and UPF, IP address allocation on `oaitun_ue1`, and working routing/NAT rules between the UPF and the External Data Network.
+
+3. **What does a successful Ping prove, and what does it not prove about the simulated 5G system?**
+   A successful Ping proves complete end-to-end bidirectional IP connectivity across the entire 5G Standalone stack—confirming that the UE tunnel (`oaitun_ue1`), simulated air interface (RFsimulator), gNB, N3 GTP-U tunnel, UPF, and External DN are all properly configured and forwarding user-plane packets. However, it does not prove real-world over-the-air radio performance, physical RF propagation resilience (fading, interference, mobility/handover), hardware timing accuracy, or high-throughput capacity under heavy multi-UE traffic loads.
 
 ## 6. Task 4 — Investigate the Effect of Packet Size
 
