@@ -102,13 +102,13 @@ grep -nE \
 
 **Questions**
 
-**1. Which protocol layers mainly reside in the CU, and which reside in the DU?**
+**1. Which protocol layers mainly reside in the CU, and which reside in the DU?**  
 The **gNB-CU** hosts the higher, non-real-time layers: **RRC** (control plane), **SDAP** (user plane), and **PDCP** (both planes). The **gNB-DU** hosts the lower, time-critical layers: **RLC**, **MAC**, and **PHY**.
 
-**2. What is the purpose of the F1 interface?**
+**2. What is the purpose of the F1 interface?**  
 The F1 interface interconnects the gNB-CU and gNB-DU in a split RAN architecture. It separates control-plane signaling (**F1-C** via F1AP/SCTP) from user-plane data transport (**F1-U** via GTP-U/UDP), allowing centralized RRC/PDCP management while keeping lower-layer scheduling close to the radio.
 
-**3. Why must the UE radio frequency be compatible with the DU rather than taken blindly from the previous lab?**
+**3. Why must the UE radio frequency be compatible with the DU rather than taken blindly from the previous lab?**  
 The UE performs initial cell search and synchronization by scanning for the Synchronization Signal Block (SSB) broadcast by the DU's PHY layer. Because this DU config sets `absoluteFrequencySSB = 630048` (`3450.72 MHz`) instead of Lab 3's `641280` (`3619.20 MHz`), reusing the old `-C` parameter would prevent the UE from detecting the cell.
 
 ---
@@ -288,19 +288,19 @@ Find and record these messages:
 
 **Questions**
 
-**1. Which node initiates F1 Setup, and which acknowledges it?**
+**1. Which node initiates F1 Setup, and which acknowledges it?**  
 The **gNB-DU** (`127.0.0.4`) initiates the procedure by sending `F1SetupRequest` (Packet #5), and the **gNB-CU** (`127.0.0.3`) acknowledges it by replying with `F1SetupResponse` (Packet #7).
 
-**2. Explain the difference between SCTP association establishment and F1 Setup.**
+**2. Explain the difference between SCTP association establishment and F1 Setup.**  
 SCTP association establishment (Packets #1–#4: `INIT`, `INIT_ACK`, `COOKIE_ECHO`, `COOKIE_ACK`) sets up the underlying transport-layer connection between the two IP endpoints. **F1 Setup** (Packets #5 and #7) is an application-layer F1AP control-plane procedure exchanged over that established SCTP stream to exchange 5G RAN configuration parameters (such as cell IDs, PLMN, and MIB/SIB1) and bring the F1 interface into operational service.
 
-**3. How can a NAS Registration Request be transported over F1-C?**
+**3. How can a NAS Registration Request be transported over F1-C?**  
 Because the gNB-DU does not process RRC or NAS layers, it encapsulates the UE's `RRCSetupComplete` message—which carries the piggybacked NAS `Registration Request` payload—inside an F1AP **`ULRRCMessageTransfer`** message (Packet #18) and forwards it to the gNB-CU, which then extracts the NAS PDU and sends it to the AMF over N2.
 
-**4. What is the role of UE Context Setup?**
+**4. What is the role of UE Context Setup?**  
 `UEContextSetupRequest` / `UEContextSetupResponse` (Packets #31–#32) instructs the gNB-DU to allocate lower-layer radio resources (RLC, MAC, and PHY configurations, SRBs/DRBs, and F1-U GTP-U tunnel endpoints) for a specific UE and report the allocated cell/radio configuration back to the gNB-CU.
 
-**5. Does F1 Setup alone prove successful UE Registration? Explain.**
+**5. Does F1 Setup alone prove successful UE Registration? Explain.**  
 No. F1 Setup only confirms that the control-plane link and cell configuration between the gNB-DU and gNB-CU are operational; UE Registration requires subsequent RRC connection establishment, NAS signaling between the UE and the 5G Core (AMF/AUSF/UDM), and subscriber authentication.
 
 **Evidence:** Screenshot with F1 Setup Request/Response and screenshot with at least three UE-associated F1AP messages. Include packet numbers and source/destination addresses.
@@ -371,19 +371,19 @@ Identify the interface using the actual source/destination endpoints and configu
 
 **Questions**
 
-**1. Which transport protocol carries F1-U?**
+**1. Which transport protocol carries F1-U?**  
 **UDP** (specifically on destination/source port `2152`) carries the GTP-U protocol over F1-U.
 
-**2. What does a GTP-U TEID identify?**
+**2. What does a GTP-U TEID identify?**  
 The **Tunnel Endpoint Identifier (TEID)** uniquely identifies a specific user-plane tunnel endpoint (corresponding to a specific UE Data Radio Bearer / PDU session leg) at the receiving node so that encapsulated user traffic is routed to the correct UE context.
 
-**3. Which direction is `127.0.0.4 → 127.0.0.3` in this setup?**
+**3. Which direction is `127.0.0.4 → 127.0.0.3` in this setup?**  
 It is the **Uplink (UL)** direction, carrying encapsulated UE user-plane packets from the **gNB-DU** (`127.0.0.4`) to the **gNB-CU** (`127.0.0.3`).
 
-**4. How would you distinguish F1-U from N3 in a packet capture?**
+**4. How would you distinguish F1-U from N3 in a packet capture?**  
 By checking the outer source and destination IP addresses rather than relying solely on the GTP-U protocol or UDP port `2152`: **F1-U** runs between the **gNB-DU and gNB-CU** (`127.0.0.4 ↔ 127.0.0.3`), whereas **N3** runs between the **gNB-CU and the 5GC UPF** (e.g., `192.168.70.129 ↔ 192.168.70.134`).
 
-**5. Why do F1-C and F1-U use different transport protocols?**
+**5. Why do F1-C and F1-U use different transport protocols?**  
 **F1-C** uses **SCTP** to guarantee reliable, ordered, message-oriented delivery with multi-streaming for critical control-plane signaling (RRC/F1AP), whereas **F1-U** uses **UDP** to minimize encapsulation and transport overhead and avoid head-of-line blocking for latency-sensitive user-plane data packets.
 
 **Evidence:** Screenshot of at least one GTP-U T-PDU, with outer IP addresses, UDP ports, message type, and TEID visible. Record the observed UL and DL packet counts (if both directions are present). Do not assume equal counts.
