@@ -402,15 +402,17 @@ Complete the table:
 
 | Feature | Lab 3: Monolithic gNB | Lab 4: CU/DU Split |
 |---|---|---|
-| Number of RAN processes | | |
-| Location of RRC/PDCP | | |
-| Location of RLC/MAC/PHY | | |
-| F1-C interface present? | | |
-| F1-U interface present? | | |
-| UE connected to the same 5GC? | | |
-| End-to-end Ping works? | | |
+| Number of RAN processes | 1 (`nr-softmodem`) | 2 (`nr-softmodem` for gNB-CU and `nr-softmodem` for gNB-DU) |
+| Location of RRC/PDCP | Inside the single monolithic gNB process | Inside the **gNB-CU** (`127.0.0.3`) |
+| Location of RLC/MAC/PHY | Inside the single monolithic gNB process | Inside the **gNB-DU** (`127.0.0.4`) |
+| F1-C interface present? | No | Yes (F1AP over SCTP between `127.0.0.3` and `127.0.0.4`) |
+| F1-U interface present? | No | Yes (GTP-U over UDP port `2152` between `127.0.0.3` and `127.0.0.4`) |
+| UE connected to the same 5GC? | Yes (OAI CN5G) | Yes (OAI CN5G) |
+| End-to-end Ping works? | Yes (`0%` packet loss to `192.168.70.135`) | Yes (`0%` packet loss to `192.168.70.135`) |
 
 Explain in **3–5 sentences** why splitting a gNB changes the internal RAN interfaces but does not change the UE's need for synchronization, registration and a PDU session.
+
+Splitting a monolithic gNB into a gNB-CU and a gNB-DU only disaggregates the internal RAN protocol stack across two nodes connected by the F1-C (F1AP/SCTP) and F1-U (GTP-U/UDP) interfaces. From the UE's perspective, the 5G NR air interface (Uu) and the external 5G Core interfaces (N2/N3) remain completely standard and unchanged. Consequently, the UE still needs to synchronize with the cell's physical-layer broadcast signals (handled by the DU), authenticate and register with the AMF via NAS signaling (relayed through the DU and CU), and establish a PDU session with the SMF/UPF to obtain an IP address and exchange user-plane traffic.
 
 ---
 
