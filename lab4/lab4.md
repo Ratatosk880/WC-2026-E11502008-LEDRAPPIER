@@ -125,7 +125,7 @@ docker compose up -d
 docker compose ps
 ```
 
-![task2dock](screenshots/task2dock)
+![task2dock](screenshots/task2dock.png)
 
 ### Terminal 2 — Start gNB-CU
 
@@ -136,7 +136,7 @@ sudo ./nr-softmodem \
   -O ../../../targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb-cu.sa.f1.conf
 ```
 
-![task2CU](screenshots/task2CU)
+![task2CU](screenshots/task2CU.png)
 
 ### Terminal 3 — Start gNB-DU
 
@@ -150,7 +150,7 @@ sudo ./nr-softmodem \
   --rfsim
 ```
 
-![task2DU](screenshots/task2DU)
+![task2DU](screenshots/task2DU.png)
 
 ### Terminal 4 — Start nrUE
 
@@ -167,7 +167,7 @@ sudo ./nr-uesoftmodem \
   --rfsimulator.serveraddr 127.0.0.1
 ```
 
-![task2nrue](screenshots/task2nrue)
+![task2nrue](screenshots/task2nrue.png)
 
 > **Instructor note:** This UE command reflects the working classroom split configuration. In particular, the original Lab 3 `-C 3619200000` setting was not compatible with this DU configuration. If a provided classroom image has different NR frequencies or UICC credentials, use the instructor-validated values.
 
@@ -178,7 +178,7 @@ ip -4 addr show oaitun_ue1
 ping -I oaitun_ue1 -c 10 192.168.70.135
 ```
 
-![task2ping](screenshots/task2ping)
+![task2ping](screenshots/task2ping.png)
 
 **Evidence:** Screenshots of CU/DU startup, UE connection, and successful Ping. Record the observed UE IP, transmitted/received packets, packet loss, and average RTT. Do **not** invent values; they vary by machine.
 
@@ -227,6 +227,8 @@ ping -I oaitun_ue1 -c 30 -i 0.2 192.168.70.135
 ls -lh ~/lab4-f1-complete.pcap
 ```
 
+![task3](screenshots/task3.png)
+
 ### Alternative: capture all traffic between CU and DU
 
 If you are unsure of the F1-U UDP port, use this **instead of** the filtered capture above:
@@ -270,18 +272,46 @@ Find and record these messages:
 | UE Context Setup Request / Response | CU ↔ DU | Establish UE-specific resources/context |
 | DL RRC Message Transfer (RRC Reconfiguration) | CU → DU | CU sends further RRC configuration |
 
+**Observed F1-C Messages in Capture (`lab4-f1-complete.pcap`):**
+- **SCTP Association Setup (Packets #1–#4):** `127.0.0.4 ↔ 127.0.0.3` (`INIT`, `INIT_ACK`, `COOKIE_ECHO`, `COOKIE_ACK`).
+- **F1 Setup Request (Packet #5):** `127.0.0.4 → 127.0.0.3` (DU initiates F1 interface setup and reports served cell MIB/SIB1).
+- **F1 Setup Response (Packet #7):** `127.0.0.3 → 127.0.0.4` (CU acknowledges and activates the cell).
+- **gNB-DU Configuration Update / Ack (Packets #9, #10):** `127.0.0.4 ↔ 127.0.0.3` (`GNBDUConfigurationUpdate` and `GNBDUConfigurationUpdateAcknowledge`).
+- **Initial UL RRC Message Transfer (Packet #16):** `127.0.0.4 → 127.0.0.3` (DU forwards UE's `RRC Setup Request` to CU).
+- **DL RRC Message Transfer (Packet #17):** `127.0.0.3 → 127.0.0.4` (CU sends `RRC Setup` to DU).
+- **UL RRC Message Transfer (Packet #18):** `127.0.0.4 → 127.0.0.3` (DU forwards `RRC Setup Complete` carrying the NAS `Registration Request`).
+- **UE Context Setup Request / Response (Packets #31, #32):** `127.0.0.3 ↔ 127.0.0.4` (CU establishes the UE context and radio bearers on the DU).
+- **DL / UL RRC Reconfiguration (Packets #33, #34):** `127.0.0.3 ↔ 127.0.0.4` (`RRC Reconfiguration` and `RRC Reconfiguration Complete`).
+
+
 **Observed classroom sequence:** The successful capture contained SCTP association, F1 Setup Request/Response, DU Configuration Update/Acknowledgement, RRC Setup messages, Authentication signaling carried through RRC, UE Context Setup/Modification, and RRC Reconfiguration. The exact packet numbers and timing are **not fixed**.
 
 **Questions**
 
-1. Which node initiates F1 Setup, and which acknowledges it?
-2. Explain the difference between SCTP association establishment and F1 Setup.
-3. How can a NAS Registration Request be transported over F1-C?
-4. What is the role of UE Context Setup?
-5. Does F1 Setup alone prove successful UE Registration? Explain.
+**1. Which node initiates F1 Setup, and which acknowledges it?**
+The **gNB-DU** (`127.0.0.4`) initiates the procedure by sending `F1SetupRequest` (Packet #5), and the **gNB-CU** (`127.0.0.3`) acknowledges it by replying with `F1SetupResponse` (Packet #7).
+
+**2. Explain the difference between SCTP association establishment and F1 Setup.**
+SCTP association establishment (Packets #1–#4: `INIT`, `INIT_ACK`, `COOKIE_ECHO`, `COOKIE_ACK`) sets up the underlying transport-layer connection between the two IP endpoints. **F1 Setup** (Packets #5 and #7) is an application-layer F1AP control-plane procedure exchanged over that established SCTP stream to exchange 5G RAN configuration parameters (such as cell IDs, PLMN, and MIB/SIB1) and bring the F1 interface into operational service.
+
+**3. How can a NAS Registration Request be transported over F1-C?**
+Because the gNB-DU does not process RRC or NAS layers, it encapsulates the UE's `RRCSetupComplete` message—which carries the piggybacked NAS `Registration Request` payload—inside an F1AP **`ULRRCMessageTransfer`** message (Packet #18) and forwards it to the gNB-CU, which then extracts the NAS PDU and sends it to the AMF over N2.
+
+**4. What is the role of UE Context Setup?**
+`UEContextSetupRequest` / `UEContextSetupResponse` (Packets #31–#32) instructs the gNB-DU to allocate lower-layer radio resources (RLC, MAC, and PHY configurations, SRBs/DRBs, and F1-U GTP-U tunnel endpoints) for a specific UE and report the allocated cell/radio configuration back to the gNB-CU.
+
+**5. Does F1 Setup alone prove successful UE Registration? Explain.**
+No. F1 Setup only confirms that the control-plane link and cell configuration between the gNB-DU and gNB-CU are operational; UE Registration requires subsequent RRC connection establishment, NAS signaling between the UE and the 5G Core (AMF/AUSF/UDM), and subscriber authentication.
 
 **Evidence:** Screenshot with F1 Setup Request/Response and screenshot with at least three UE-associated F1AP messages. Include packet numbers and source/destination addresses.
+- Packet 5: F1 Setup Request
+  ![task41](screenshots/task41.png)
 
+- Packet 18: UL RRC Message Transfer
+  ![task42](screenshots/task42.png)
+
+- Packet 31: UE Context Setup Request
+  ![task43](screenshots/task43.png)
 ---
 
 ## 7. Task 5 — Analyze F1-U (GTP-U / UDP)
