@@ -357,15 +357,42 @@ Both **F1-U** and **N3** can use GTP-U. Do **not** classify traffic as F1-U sole
 
 Identify the interface using the actual source/destination endpoints and configuration.
 
+**Observed F1-U (GTP-U) Values in Capture (`lab4-f1-complete.pcap`):**
+- **Uplink (`127.0.0.4 → 127.0.0.3`, DU → CU):**
+  - **Message Type:** `T-PDU (0xff)`
+  - **UDP Ports:** `2152 → 2152`
+  - **TEID:** `0xa23dbccd` (`2721955021`)
+  - **Observed UL packet count:** `49`
+- **Downlink (`127.0.0.3 → 127.0.0.4`, CU → DU):**
+  - **Message Type:** `T-PDU (0xff)`
+  - **UDP Ports:** `2152 → 2152`
+  - **TEID:** `0x3e6babfa` (`1047243770`)
+  - **Observed DL packet count:** `40`
+
 **Questions**
 
-1. Which transport protocol carries F1-U?
-2. What does a GTP-U **TEID** identify?
-3. Which direction is `127.0.0.4 → 127.0.0.3` in this setup?
-4. How would you distinguish F1-U from N3 in a packet capture?
-5. Why do F1-C and F1-U use different transport protocols?
+**1. Which transport protocol carries F1-U?**
+**UDP** (specifically on destination/source port `2152`) carries the GTP-U protocol over F1-U.
+
+**2. What does a GTP-U TEID identify?**
+The **Tunnel Endpoint Identifier (TEID)** uniquely identifies a specific user-plane tunnel endpoint (corresponding to a specific UE Data Radio Bearer / PDU session leg) at the receiving node so that encapsulated user traffic is routed to the correct UE context.
+
+**3. Which direction is `127.0.0.4 → 127.0.0.3` in this setup?**
+It is the **Uplink (UL)** direction, carrying encapsulated UE user-plane packets from the **gNB-DU** (`127.0.0.4`) to the **gNB-CU** (`127.0.0.3`).
+
+**4. How would you distinguish F1-U from N3 in a packet capture?**
+By checking the outer source and destination IP addresses rather than relying solely on the GTP-U protocol or UDP port `2152`: **F1-U** runs between the **gNB-DU and gNB-CU** (`127.0.0.4 ↔ 127.0.0.3`), whereas **N3** runs between the **gNB-CU and the 5GC UPF** (e.g., `192.168.70.129 ↔ 192.168.70.134`).
+
+**5. Why do F1-C and F1-U use different transport protocols?**
+**F1-C** uses **SCTP** to guarantee reliable, ordered, message-oriented delivery with multi-streaming for critical control-plane signaling (RRC/F1AP), whereas **F1-U** uses **UDP** to minimize encapsulation and transport overhead and avoid head-of-line blocking for latency-sensitive user-plane data packets.
 
 **Evidence:** Screenshot of at least one GTP-U T-PDU, with outer IP addresses, UDP ports, message type, and TEID visible. Record the observed UL and DL packet counts (if both directions are present). Do not assume equal counts.
+
+- GTP UL:
+  ![task51](screenshots/task51.png)
+
+- GTP DL:
+  ![task52](screenshots/task52.png)
 
 ---
 
