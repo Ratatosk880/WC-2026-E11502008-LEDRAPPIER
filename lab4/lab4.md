@@ -125,6 +125,8 @@ docker compose up -d
 docker compose ps
 ```
 
+![task2dock](screenshots/task2dock)
+
 ### Terminal 2 — Start gNB-CU
 
 ```bash
@@ -133,6 +135,8 @@ cd ~/openairinterface5g-v2.4.0/cmake_targets/ran_build/build
 sudo ./nr-softmodem \
   -O ../../../targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb-cu.sa.f1.conf
 ```
+
+![task2CU](screenshots/task2CU)
 
 ### Terminal 3 — Start gNB-DU
 
@@ -145,6 +149,8 @@ sudo ./nr-softmodem \
   -O ../../../targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb-du.sa.band78.106prb.rfsim.pci0.conf \
   --rfsim
 ```
+
+![task2DU](screenshots/task2DU)
 
 ### Terminal 4 — Start nrUE
 
@@ -161,6 +167,8 @@ sudo ./nr-uesoftmodem \
   --rfsimulator.serveraddr 127.0.0.1
 ```
 
+![task2nrue](screenshots/task2nrue)
+
 > **Instructor note:** This UE command reflects the working classroom split configuration. In particular, the original Lab 3 `-C 3619200000` setting was not compatible with this DU configuration. If a provided classroom image has different NR frequencies or UICC credentials, use the instructor-validated values.
 
 ### Check the UE connection
@@ -170,7 +178,16 @@ ip -4 addr show oaitun_ue1
 ping -I oaitun_ue1 -c 10 192.168.70.135
 ```
 
+![task2ping](screenshots/task2ping)
+
 **Evidence:** Screenshots of CU/DU startup, UE connection, and successful Ping. Record the observed UE IP, transmitted/received packets, packet loss, and average RTT. Do **not** invent values; they vary by machine.
+
+**Observed Task 2 Values:**
+- **UE IP address (`oaitun_ue1`):** `10.0.0.2/24`
+- **Packets transmitted:** `10`
+- **Packets received:** `10`
+- **Packet loss:** `0%`
+- **Average RTT:** `17.360 ms` (min `14.468 ms` / max `21.707 ms`)
 
 ---
 
