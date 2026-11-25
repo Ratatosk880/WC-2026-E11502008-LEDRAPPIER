@@ -301,6 +301,34 @@ Using the log and Wireshark evidence found in Tasks 1 and 2, draw your own Messa
 
 Determine and draw the correct order and direction of the messages yourself. Add a one-sentence purpose next to each arrow.
 
+```mermaid
+sequenceDiagram
+    participant UE as UE (PCI: 0)
+    participant gNB as gNB
+
+    Note over UE: State: RRC_IDLE (Initial Sync / Cell Search)
+
+    gNB->>UE: MIB / SIB1 (Broadcast)
+    Note right of gNB: Broadcasts physical-layer timing and common PRACH/cell access parameters.
+
+    UE->>gNB: Msg1: PRACH Preamble (preambleIndex=16, Frame.Slot 553.19)
+    Note left of UE: Initiates uplink synchronization and requests initial uplink scheduling resources.
+
+    gNB->>UE: Msg2: RAR (RAPID=16, Temporary C-RNTI=0xf21e / 61982)
+    Note right of gNB: Acknowledges the detected preamble and assigns a Temporary C-RNTI and uplink grant.
+
+    UE->>gNB: Msg3: RRCSetupRequest (CCCH, RNTI=0xf21e)
+    Note left of UE: Requests an RRC connection using the assigned Temporary C-RNTI and random UE identity.
+
+    gNB->>UE: Msg4: Contention Resolution + RRCSetup (CCCH, rrc-TransactionIdentifier=1)
+    Note right of gNB: Resolves RACH contention and provides SRB1 radio bearer configuration.
+
+    Note over UE: State transition: RRC_IDLE → RRC_CONNECTED
+
+    UE->>gNB: RRCSetupComplete (DCCH / SRB1, rrc-TransactionIdentifier=1)
+    Note left of UE: Confirms RRC connection setup completion and piggybacks the NAS Registration Request.
+```
+
 | Item | Points |
 |---|---:|
 | UE and gNB lifelines, with the two UE states identified | 5 |
