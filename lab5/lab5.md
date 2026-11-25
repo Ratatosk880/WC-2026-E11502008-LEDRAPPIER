@@ -83,11 +83,7 @@ Record whether UE synchronization succeeded and the PCI value. Explain: after co
 **Explanation:**
 After completing initial synchronization (detecting PSS/SSS), the UE achieves downlink time and frequency synchronization with the cell and identifies its Physical Cell ID (`PCI: 0`). This allows the UE to locate and decode the Physical Broadcast Channel (PBCH) to read the Master Information Block (MIB) and subsequent System Information Block 1 (SIB1).
 
-[task11]- **Synchronization succeeded:** Yes (line `63`: `[PHY] Initial sync successful, PCI: 0`)
-- **PCI value:** `0`
-
-**Explanation:**
-After completing initial synchronization (detecting PSS/SSS), the UE achieves downlink time and frequency synchronization with the cell and identifies its Physical Cell ID (`PCI: 0`). This allows the UE to locate and decode the Physical Broadcast Channel (PBCH) to read the Master Information Block (MIB) and subsequent System Information Block 1 (SIB1).(screenshots/task11.png)
+![task11](screenshots/task11.png)
 
 #### Step 2: Find MIB and SIB1 — 8 points
 
@@ -102,9 +98,9 @@ Find one `MIB` packet and one `SIB1` packet. Record the frame number of each and
 MIB and SIB1 are repeatedly broadcast system-information messages. The UE must obtain the common configuration before it can continue the access procedure. Briefly explain the purpose of MIB and SIB1 for UE access.
 
 - **MIB Frame Number:** `2` (for example; broadcast periodically across the capture)
-  [task121](screenshots/task121.png)
+  ![task121](screenshots/task121.png)
 - **SIB1 Frame Number:** `1` (for example; broadcast periodically across the capture)
-  [task122](screenshots/task122.png)
+  ![task122](screenshots/task122.png)
 
 **Purpose of MIB and SIB1 for UE Access:**
 The **MIB** (Master Information Block, carried on PBCH) provides the essential physical-layer parameters—such as the System Frame Number (SFN), subcarrier spacing, and CORESET#0 configuration—needed to locate and decode the PDCCH/PDSCH carrying SIB1. **SIB1** (System Information Block 1) delivers cell access and selection parameters (PLMN ID, Cell ID, TAC) along with common radio resource configurations (including PRACH parameters) required for the UE to initiate Random Access.
@@ -141,9 +137,9 @@ This packet is displayed as `MAC-LTE RACH Preamble chosen`; it is the OAI tracer
 
 Submit one UE-log screenshot and one Wireshark screenshot. Briefly answer:  
 
-[task131](screenshots/task131.png)  
+![task131](screenshots/task131.png)  
 
-[task132](screenshots/task132.png)  
+![task132](screenshots/task132.png)  
 
 - **Msg1 log line number:** `81`
 - **`frame.slot`:** `553.19`
@@ -170,7 +166,7 @@ Frame number = 490
 RAPID = 16
 Temporary C-RNTI = 61982
 ```
-[task141](screenshots/task141.png)  
+![task141](screenshots/task141.png)  
 
 ### Task 2: Complete Random Access and RRC Connection Setup — 40 points
 
@@ -221,7 +217,7 @@ Check whether `Contention Resolution` also appears in the packet.
 
 Below the screenshot, briefly answer:
 
-[task221](screenshots/task221.png)  
+![task221](screenshots/task221.png)  
 
 **Questions**
 
@@ -256,7 +252,7 @@ rrc-TransactionIdentifier = 1
 
 Below the screenshot, briefly answer:
 
-[task231](screenshots/task231.png)  
+![task231](screenshots/task231.png)  
 
 **Questions**
 
@@ -286,7 +282,7 @@ Generating RRCSetupComplete: line 93
 
 Submit a screenshot of this log output and briefly answer:  
 
-[task241](screenshots/task241.png)  
+![task241](screenshots/task241.png)  
 
 **Questions**
 
